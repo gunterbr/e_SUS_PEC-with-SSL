@@ -1,7 +1,5 @@
 # Certificado SSL com Let's Encrypt para o e-SUS-PEC
-```
 Nota: Certifique-se de não estar ocupando a porta 80, que será usada pelo certbot para baixar o certificado SSL.
-```
 
 ## Habilitando o SSL
 ### Encerre o serviço
