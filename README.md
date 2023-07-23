@@ -53,6 +53,8 @@ server.ssl.key-alias=esusaps
 security.require-ssl=true
 ```
 
+**INICIE O SERVICO DO E-SUS NOVAMENTE!!!**
+
 ## Renovação automática
 ### Crie um uma tarefa para lidar com a renovação do certificado, conversão para .jks e .p12
 ```
