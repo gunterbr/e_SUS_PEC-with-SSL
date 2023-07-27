@@ -65,13 +65,13 @@ Inclua
 ```
 #!/bin/bash
 
-cert_file="/etc/letsencrypt/live/caroebe.esushost.com.br/fullchain.pem"
-key_file="/etc/letsencrypt/live/caroebe.esushost.com.br/privkey.pem"
+cert_file="/etc/letsencrypt/live/meudominio.com.br/fullchain.pem"
+key_file="/etc/letsencrypt/live/meudominio.com.br/privkey.pem"
 
 jks_file="/opt/e-SUS/webserver/config/esusaps.jks"
 p12_file="/opt/e-SUS/webserver/config/esusaps.p12"
 
-password="Jtw1881"
+password="suaSenha"
 alias="esusaps"
 
 sudo certbot renew --force-renewal
