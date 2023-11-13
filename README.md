@@ -114,7 +114,7 @@ Nota: Esta explicação sobre como fazer o processo no Windows não é exaustiva
 
 ### Preparando o certificado
 
-1º Gere o certificado através do certbot [Aqui](https://github.com/gunterbr/e_SUS_PEC-with-SSL/tree/main#baixando-o-certificado-para-o-seu-dom%C3%ADnio)
+1º Gere o certificado através do certbot [Aqui](#baixando-o-certificado-para-o-seu-dom%C3%ADnio)
 
 2º Inicie PowerShell como ADMINISTRADOR
 
@@ -141,7 +141,7 @@ Execute dentro dentro do diretório onde o certificado foi salvo ou forneça o c
 openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out esusaps.p12 -name "esusaps" -passout pass:suaSenha
 ```
 
-3º Configure, como nesse exemplo [Aqui](https://github.com/gunterbr/e_SUS_PEC-with-SSL/tree/main#edite-o-applicationproperties)
+3º Configure, como nesse exemplo [Aqui](#edite-o-applicationproperties)
 
 ## Lembre-se:
 * O novo certificado gerado e convertido só será carregador se reiniciar o serviço e-SUS-PEC
