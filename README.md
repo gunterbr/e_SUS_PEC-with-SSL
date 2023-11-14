@@ -1,5 +1,9 @@
 # Certificado SSL com Let's Encrypt para o e-SUS-PEC
-Nota: Certifique-se de não estar ocupando a porta 80, que será usada pelo certbot para baixar o certificado SSL.
+Nota 1: Certifique-se de não estar ocupando a porta 80, que será usada pelo certbot para baixar o certificado SSL.
+Nota 2: Alternativamente, altere a porta padrão do certbor dessa forma:
+```
+certbot certonly --standalone --http-01-port 8080 -d meudominio.com.br
+```
 
 ## LINUX 🖥️
 - Ubuntu 22.04.2
@@ -114,9 +118,11 @@ Nota: Esta explicação sobre como fazer o processo no Windows não é exaustiva
 
 ### Preparando o certificado
 
-1º Gere o certificado através do certbot [Aqui](#baixando-o-certificado-para-o-seu-dom%C3%ADnio)
+1º Instale o Certbot a partir de [download Certbot Windows](https://github.com/certbot/certbot/releases/latest/download/certbot-beta-installer-win_amd64_signed.exe)
 
-2º Inicie PowerShell como ADMINISTRADOR
+2º Gere o certificado através do certbot, como feito [Aqui](#baixando-o-certificado-para-o-seu-dom%C3%ADnio)
+
+3º Inicie PowerShell como ADMINISTRADOR
 
 #### Instale o Chocolatey
 
@@ -141,7 +147,7 @@ Execute dentro do diretório onde o certificado foi salvo ou forneça o caminho 
 openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out esusaps.p12 -name "esusaps" -passout pass:suaSenha
 ```
 
-3º Configure, como nesse exemplo [Aqui](#edite-o-applicationproperties)
+4º Configure, como feito [Aqui](#edite-o-applicationproperties)
 
 ## Lembre-se:
 * O novo certificado gerado e convertido só será carregador se reiniciar o serviço e-SUS-PEC
