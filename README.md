@@ -135,7 +135,7 @@ choco install openssl --version=1.1.1.2100
 ```
 
 #### Converta o certificado .pem para .p12
-Execute dentro dentro do diretório onde o certificado foi salvo ou forneça o caminho do arquivo.
+Execute dentro do diretório onde o certificado foi salvo ou forneça o caminho do arquivo.
 
 ```
 openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out esusaps.p12 -name "esusaps" -passout pass:suaSenha
