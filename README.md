@@ -5,10 +5,10 @@ Nota 2: Alternativamente, altere a porta padrão do certbor dessa forma:
 certbot certonly --standalone --http-01-port 8080 -d meudominio.com.br
 ```
 
-## LINUX 🖥️
-- Ubuntu 22.04.2
-- OpenSSL 3.0.2 (Caso prefira, purgue a versão padrão e instale a versão 1 - isso poderá dispensar a conversão entre .pem, .jks e .p12)
-- Java 8
+## AMBIENTE LINUX 🖥️
+- Ubuntu 22.04.4
+- OpenSSL 3.0.2
+- Java 11
 
 ### Habilitando o SSL
 
@@ -38,16 +38,14 @@ certbot certonly --standalone -d meudominio.com.br
 cd /opt/e-SUS/webserver/config
 ```
 
-#### Converta o certificado .pem para .jks (Java KeyStore)
-Nota: se você usar a versão 1 do OpenSSL é provável que funcione convertendo diretamente de .pem para .p12
-
+#### Converta o certificado .pem para .p12 (PKCS12)
 ```
-openssl pkcs12 -export -in /etc/letsencrypt/live/meudominio.com.br/fullchain.pem -inkey /etc/letsencrypt/live/meudominio.com.br/privkey.pem -out /opt/e-SUS/webserver/config/esusaps.jks -name "esusaps" -passout pass:suaSenha
+openssl pkcs12 -export -in /etc/letsencrypt/live/meudominio.com.br/fullchain.pem -inkey /etc/letsencrypt/live/meudominio.com.br/privkey.pem -out /opt/e-SUS/webserver/config/esusaps.p12 -name "esusaps" -passout pass:suaSenha
 ```
 
-#### Converta o certificado .jks para .p12 (PKCS12)
+#### Converta o certificado .p12 para .jks (Java Keystore)
 ```
-keytool -importkeystore -srckeystore /opt/e-SUS/webserver/config/esusaps.jks -destkeystore /opt/e-SUS/webserver/config/esusaps.p12 -srcstoretype JKS -deststoretype PKCS12 -deststorepass suaSenha -srcstorepass suaSenha
+keytool -importkeystore -srckeystore /opt/e-SUS/webserver/config/esusaps.p12 -srcstoretype PKCS12 -destkeystore /opt/e-SUS/webserver/config/esusaps.jks -deststoretype JKS -deststorepass suaSenha -srcstorepass suaSenha
 ```
 
 #### Edite o application.properties
@@ -58,17 +56,19 @@ nano application.properties
 Altere ou inclua
 ```
 server.port=443
-server.ssl.key-store-type=PKCS12
-server.ssl.key-store=/opt/e-SUS/webserver/config/esusaps.p12
+server.ssl.key-store=/opt/e-SUS/webserver/config/esusaps.jks
 server.ssl.key-store-password=suaSenha
 server.ssl.key-alias=esusaps
 security.require-ssl=true
 ```
 
-**INICIE O SERVICO DO E-SUS NOVAMENTE!!!**
+#### Reinicie o serviço
+```
+service e-SUS-PEC start
+```
 
 ### Renovação automática
-#### Crie um uma tarefa para lidar com a renovação do certificado, conversão para .jks e .p12
+#### Crie um uma tarefa para lidar com a renovação do certificado, conversão para .p12 e .jks
 ```
 nano renew_cert.sh
 ```
@@ -80,18 +80,18 @@ Inclua
 cert_file="/etc/letsencrypt/live/meudominio.com.br/fullchain.pem"
 key_file="/etc/letsencrypt/live/meudominio.com.br/privkey.pem"
 
-jks_file="/opt/e-SUS/webserver/config/esusaps.jks"
 p12_file="/opt/e-SUS/webserver/config/esusaps.p12"
+jks_file="/opt/e-SUS/webserver/config/esusaps.jks"
 
 password="suaSenha"
 alias="esusaps"
 
 sudo certbot renew --force-renewal
 
-openssl pkcs12 -export -in $cert_file -inkey $key_file -out $jks_file -name $alias -passout pass:$password
+openssl pkcs12 -export -in $cert_file -inkey $key_file -out $p12_file -name $alias -passout pass:$password
 
-keytool -delete -alias $alias -keystore $p12_file -storetype PKCS12 -storepass $password
-keytool -importkeystore -srckeystore $jks_file -destkeystore $p12_file -srcstoretype JKS -deststoretype PKCS12 -deststorepass $password -srcstorepass $password
+keytool -delete -alias $alias -keystore $jks_file -storetype JKS -storepass $password
+keytool -importkeystore -srckeystore $p12_file -srcstoretype PKCS12 -destkeystore $jks_file -deststoretype JKS -deststorepass $password -srcstorepass $password
 ```
 
 #### Torne o script executável
@@ -108,46 +108,6 @@ Inclua
 ```
 0 0 */80 * * /opt/e-SUS/webserver/config/renew_cert.sh >> /opt/e-SUS/webserver/config/certbot_renew.log 2>&1
 ```
-
-## WINDOWS 🖥️
-- Windows 10
-- OpenSSL 1.1.1.2100
-- Java 8
-
-Nota: Esta explicação sobre como fazer o processo no Windows não é exaustiva. Verifique questões como o referenciamento dos diretórios e renovação do certificado.
-
-### Preparando o certificado
-
-1º Instale o Certbot a partir de [download Certbot Windows](https://github.com/certbot/certbot/releases/latest/download/certbot-beta-installer-win_amd64_signed.exe)
-
-2º Gere o certificado através do certbot, como feito [Aqui](#baixando-o-certificado-para-o-seu-dom%C3%ADnio)
-
-3º Inicie PowerShell como ADMINISTRADOR
-
-#### Instale o Chocolatey
-
-```
-Set-ExecutionPolicy AllSigned
-```
-
-```
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-```
-
-#### Instale o OpenSSL
-
-```
-choco install openssl --version=1.1.1.2100
-```
-
-#### Converta o certificado .pem para .p12
-Execute dentro do diretório onde o certificado foi salvo ou forneça o caminho do arquivo.
-
-```
-openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out esusaps.p12 -name "esusaps" -passout pass:suaSenha
-```
-
-4º Configure, como feito [Aqui](#edite-o-applicationproperties)
 
 ## Lembre-se:
 * O novo certificado gerado e convertido só será carregador se reiniciar o serviço e-SUS-PEC
