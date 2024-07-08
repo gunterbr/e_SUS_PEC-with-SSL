@@ -1,6 +1,6 @@
 # Certificado SSL com Let's Encrypt para o e-SUS-PEC
-Nota 1: Certifique-se de não estar ocupando a porta 80, que será usada pelo certbot para baixar o certificado SSL.
-Nota 2: Alternativamente, altere a porta padrão do certbor dessa forma:
+- Nota 1: Certifique-se de não estar ocupando a porta 80, que será usada pelo certbot para baixar o certificado SSL.
+- Nota 2: Alternativamente, altere a porta padrão do certbor dessa forma:
 ```
 certbot certonly --standalone --http-01-port 8080 -d meudominio.com.br
 ```
